@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>spot</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,10 +22,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.jnoe.simpleApp</string>
+			<string>com.jnoe.spotifySDK</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>spot://login</string>
+				<string>spotifySDK://callback</string>
 			</array>
 		</dict>
 	</array>
@@ -77,5 +75,22 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>spotify</string>
+    </array>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>com.jnoe.spotifySDK</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>spotifySDK</string>
+        </array>
+      </dict>
+    </array>
+
 </dict>
 </plist>
