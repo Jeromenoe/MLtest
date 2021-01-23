@@ -7,18 +7,13 @@
 
 import UIKit
 
-class ViewController: UIViewController, SPTSessionManagerDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
-    
+class PlayerView: UIView, SPTSessionManagerDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
+    static let shared = PlayerView()
     //MARK: - Spotify variables
-    
+
     private let SpotifyClientID = "9bc6703113b0414cb999ca241bd97c86"
     private let SpotifyRedirectURI = URL(string: "spotifySDK://callback")!
-    
+
     lazy var configuration: SPTConfiguration = {
         let configuration = SPTConfiguration(clientID: SpotifyClientID, redirectURL: SpotifyRedirectURI)
         configuration.playURI = ""
@@ -41,36 +36,34 @@ class ViewController: UIViewController, SPTSessionManagerDelegate, SPTAppRemoteD
     private var lastPlayerState: SPTAppRemotePlayerState?
 
     //MARK: - SPTSessionManagerDelegate
-    
+
     func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
         appRemote.connectionParameters.accessToken = session.accessToken
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.appRemote.delegate = self
-            self.appRemote.connect()
-//        }
+        self.appRemote.delegate = self
+        self.appRemote.connect()
     }
-    
+
     func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
         print("Session didFailWith")
     }
-    
+
     func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
         print("Session didRenew")
     }
-    
+
 
     //MARK: - SPTAppRemoteDelegate
-    
+
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("appRemote : didFailConnectionAttemptWithError")
         lastPlayerState = nil
     }
-    
+
     func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
         print("appRemote : didDisconnectWithError")
         lastPlayerState = nil
     }
-    
+
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
         print("connecting")
         appRemote.playerAPI?.delegate = self
@@ -79,29 +72,23 @@ class ViewController: UIViewController, SPTSessionManagerDelegate, SPTAppRemoteD
                 print("Error subscribing to player state:" + error.localizedDescription)
             }
         })
-//        appRemote.playerAPI?.pause({ (status, error) in
-//            self.fetchPlayerState()
-//        })
-//        prepareDateForUI()
     }
-    
+
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
         lastPlayerState = playerState
     }
-    
-    @IBAction func connectButton(_ sender: Any) {
-        /*
-         Scopes let you specify exactly what types of data your application wants to
-         access, and the set of scopes you pass in your call determines what access
-         permissions the user is asked to grant.
-         For more information, see https://developer.spotify.com/web-api/using-scopes/.
-         */
-        
+
+    func spotifyConnect() -> Bool {
+        return true
         let scope: SPTScope = [.appRemoteControl, .playlistReadPrivate, .userReadEmail]
-        
+
         sessionManager.initiateSession(with: scope, options: .clientOnly)
+        if (appRemote.isConnected) {
+            return true
+        }
+        return false
     }
-    
+
     @IBAction func playPauseButton(_ sender: Any) {
         print("app remote : ", appRemote.isConnected)
         if let lastPlayerState = lastPlayerState, lastPlayerState.isPaused {
@@ -110,7 +97,7 @@ class ViewController: UIViewController, SPTSessionManagerDelegate, SPTAppRemoteD
             appRemote.playerAPI?.pause(nil)
         }
     }
-    
+
     @IBAction func disconnectButton(_ sender: Any) {
         if (appRemote.isConnected) {
             appRemote.playerAPI?.pause(nil)
@@ -118,4 +105,6 @@ class ViewController: UIViewController, SPTSessionManagerDelegate, SPTAppRemoteD
         }
     }
 }
+
+
 
